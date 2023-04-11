@@ -32,11 +32,11 @@ class ExpenseListAdapter(
             binding.apply {
               /*  cbReimbursable.isChecked = expense.isReimbursable*/
                 tvDescription.text = expense.description
-                tvAmount.text = String.format("$%.2f", expense.amount)
+                tvAmount.text = String.format("RM%.2f", expense.amount)
 
                 // Format transaction date as a string
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                tvDate.text = dateFormat.format(expense.transactionDate)
+                tvDate.text = expense.transactionDate
 
                 // Set category icon for ImageView
                 // You can implement a function to select the appropriate drawable for each category.

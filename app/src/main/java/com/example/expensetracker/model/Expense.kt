@@ -13,5 +13,5 @@ data class Expense(
     val amount: Double,
     val category: String,
     val transactionDate: String,
-    val isReimbursable: Boolean
+    var isReimbursable: Boolean
 ) : Parcelable

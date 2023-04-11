@@ -44,18 +44,27 @@ class ExpenseListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        expenseListAdapter = ExpenseListAdapter { expense ->
-            viewModel.setSelectedExpense(expense)
-            val action = ExpenseListFragmentDirections.actionExpenseListFragmentToAddEditExpenseFragment(expense)
-            findNavController().navigate(action)
-        }
+        expenseListAdapter = ExpenseListAdapter(
+            onExpenseClick = { expense ->
+                viewModel.setSelectedExpense(expense)
+                val action = ExpenseListFragmentDirections.actionExpenseListFragmentToAddEditExpenseFragment(expense)
+                findNavController().navigate(action)
+            },
+            onIsReimbursableChanged = { expense ->
+                viewModel.update(expense)
+            },
+            onDeleteExpense = { expense ->
+                viewModel.delete(expense)
+            }
+        )
+
         binding.rvExpenses.apply {
             adapter = expenseListAdapter
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
         }
-
     }
+
 
 
     private fun setupFab() {

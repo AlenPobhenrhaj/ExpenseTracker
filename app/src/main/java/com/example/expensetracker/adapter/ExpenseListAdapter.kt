@@ -12,7 +12,9 @@ import com.example.expensetracker.model.Expense
 import java.util.*
 
 class ExpenseListAdapter(
-   private val onExpenseClick: (Expense) -> Unit
+   private val onExpenseClick: (Expense) -> Unit,
+   private val onIsReimbursableChanged: (Expense) -> Unit,
+   private val onDeleteExpense: (Expense) -> Unit
 ) : ListAdapter<Expense, ExpenseListAdapter.ExpenseViewHolder>(ExpenseDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {
@@ -22,15 +24,22 @@ class ExpenseListAdapter(
 
     override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
         val expense = getItem(position)
-        holder.bind(expense, onExpenseClick)
+        holder.bind(expense, onExpenseClick, onIsReimbursableChanged, onDeleteExpense)
     }
 
     class ExpenseViewHolder(private val binding: ItemExpenseBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(expense: Expense, onExpenseClick: (Expense) -> Unit) {
+        fun bind(expense: Expense, onExpenseClick: (Expense) -> Unit,onIsReimbursableChanged: (Expense) -> Unit, onDeleteExpense: (Expense) -> Unit ) {
             binding.apply {
-              /*  cbReimbursable.isChecked = expense.isReimbursable*/
+                cbReimbursable.apply {
+                    isChecked = expense.isReimbursable
+                    setOnCheckedChangeListener { _, isChecked ->
+                        expense.isReimbursable = isChecked
+                        // Update the expense in the database with the new isReimbursable value
+                        onIsReimbursableChanged(expense)
+                    }
+                }
                 tvDescription.text = expense.description
                 tvAmount.text = String.format("RM%.2f", expense.amount)
 
@@ -44,6 +53,10 @@ class ExpenseListAdapter(
 
                 itemView.setOnClickListener {
                     onExpenseClick(expense)
+                }
+
+                btnDeleteExpense.setOnClickListener {
+                    onDeleteExpense(expense)
                 }
             }
         }

@@ -12,7 +12,7 @@ import com.example.expensetracker.model.Expense
 import java.util.*
 
 class ExpenseListAdapter(
-    var onExpenseClick: (Expense) -> Unit
+   private val onExpenseClick: (Expense) -> Unit
 ) : ListAdapter<Expense, ExpenseListAdapter.ExpenseViewHolder>(ExpenseDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpenseViewHolder {

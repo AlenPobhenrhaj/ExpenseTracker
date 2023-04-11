@@ -7,12 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.expensetracker.R
 import com.example.expensetracker.adapter.ExpenseListAdapter
+import com.example.expensetracker.database.AppDatabase
 import com.example.expensetracker.databinding.FragmentExpenseListBinding
 import com.example.expensetracker.model.Expense
+import com.example.expensetracker.repository.ExpenseRepository
 import com.example.expensetracker.viewmodel.ExpenseViewModel
+import com.example.expensetracker.viewmodel.ExpenseViewModelFactory
 
 class ExpenseListFragment : Fragment() {
 
@@ -20,6 +24,7 @@ class ExpenseListFragment : Fragment() {
     private val binding get() = _binding!!
 
     private lateinit var viewModel: ExpenseViewModel
+
     private lateinit var expenseListAdapter: ExpenseListAdapter
 
     override fun onCreateView(
@@ -33,7 +38,9 @@ class ExpenseListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(requireActivity()).get(ExpenseViewModel::class.java)
+        val repository = ExpenseRepository(AppDatabase.getInstance(requireContext()).expenseDao())
+        val factory = ExpenseViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, factory)[ExpenseViewModel::class.java]
 
         setupRecyclerView()
         setupFab()
@@ -41,18 +48,17 @@ class ExpenseListFragment : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        expenseListAdapter = ExpenseListAdapter { expense ->
+            viewModel.setSelectedExpense(expense)
+            val action = ExpenseListFragmentDirections.actionExpenseListFragmentToAddEditExpenseFragment(expense)
+            findNavController().navigate(action)
+        }
         binding.rvExpenses.apply {
             adapter = expenseListAdapter
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
         }
 
-        // Update the onExpenseClick lambda to set the selected expense
-        expenseListAdapter.onExpenseClick = { expense ->
-            viewModel.setSelectedExpense(expense)
-            val action = ExpenseListFragmentDirections.actionExpenseListFragmentToAddEditExpenseFragment(expense)
-            findNavController().navigate(action)
-        }
     }
 
 

@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navGraphViewModels
+import com.example.expensetracker.R
 import com.example.expensetracker.databinding.FragmentAddEditExpenseBinding
 import com.example.expensetracker.model.Expense
 import com.example.expensetracker.viewmodel.ExpenseViewModel
@@ -15,7 +17,9 @@ import java.util.*
 
 class AddEditExpenseFragment : Fragment() {
     private lateinit var binding: FragmentAddEditExpenseBinding
-    private val viewModel: ExpenseViewModel by viewModels()
+    private val viewModel: ExpenseViewModel by navGraphViewModels(R.id.nav_graph) {
+        defaultViewModelProviderFactory
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
